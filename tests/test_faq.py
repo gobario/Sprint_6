@@ -21,7 +21,7 @@ class TestFaq:
     @allure.title("Проверка текста ответа в FAQ")
     def test_faq_answer_text(self, driver, question_index, expected_answer):
         main_page = MainPage(driver)
-        main_page.open()
+        main_page.open_main_page()
 
         main_page.click_question(question_index)
 

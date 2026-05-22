@@ -51,7 +51,7 @@ class TestOrder:
         main_page = MainPage(driver)
         order_page = OrderPage(driver)
 
-        main_page.open()
+        main_page.open_main_page()
 
         if order_button == "top":
             main_page.click_top_order_button()
@@ -70,35 +70,23 @@ class TestLogo:
     @allure.title("Переход на главную страницу по логотипу Самоката")
     def test_scooter_logo_opens_main_page(self, driver):
         main_page = MainPage(driver)
-        main_page.open()
 
+        main_page.open_main_page()
         main_page.click_top_order_button()
         main_page.click_scooter_logo()
 
-        assert driver.current_url == MainPage.URL
+        assert main_page.is_main_page_opened()
 
     @allure.title("Переход на Дзен по логотипу Яндекса")
     def test_yandex_logo_opens_dzen_in_new_window(self, driver):
         main_page = MainPage(driver)
-        main_page.open()
 
-        old_window = driver.current_window_handle
+        main_page.open_main_page()
+
+        old_window = main_page.get_current_window_handle()
 
         main_page.click_yandex_logo()
+        main_page.switch_to_yandex_window(old_window)
+        main_page.wait_yandex_or_dzen_page_loaded()
 
-        WebDriverWait(driver, 10).until(
-          lambda d: len(d.window_handles) > 1
-        )
-
-        new_window = [
-           window for window in driver.window_handles
-          if window != old_window
-        ][0]
-
-        driver.switch_to.window(new_window)
-
-        WebDriverWait(driver, 15).until(
-          lambda d: d.current_url != "about:blank"
-        )
-
-        assert "yandex" in driver.current_url.lower() or "dzen" in driver.current_url.lower()
+        assert main_page.is_yandex_or_dzen_opened()
